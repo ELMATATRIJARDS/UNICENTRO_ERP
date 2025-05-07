@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inicio - Unicentro ERP</title>
+  <style>
+    :root {
+      --azul-oscuro: #1e1e2f;
+      --azul: #3b82f6;
+      --gris-fondo: #f3f4f6;
+      --blanco: #ffffff;
+      --gris-borde: #e5e7eb;
+      --verde: #10b981;
+      --rojo: #ef4444;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--gris-fondo);
+      color: #111827;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: var(--azul-oscuro);
+      color: var(--blanco);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      padding-top: 40px;
+    }
+
+    .sidebar a {
+      color: var(--blanco);
+      text-decoration: none;
+      padding: 15px 20px;
+      font-size: 18px;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #2c2c44;
+    }
+
+    .main {
+      margin-left: 220px;
+      padding: 30px;
+      background-color: var(--gris-fondo);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .logo {
+      max-width: 400px;
+      width: 100%;
+      height: auto;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+    }
+
+    .quienes-somos {
+      background-color: var(--blanco);
+      padding: 20px;
+      width: 100%;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    .quienes-somos h2 {
+      color: var(--azul-oscuro);
+      margin-bottom: 10px;
+    }
+
+    .quienes-somos p {
+      color: #555;
+      line-height: 1.6;
+    }
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: var(--azul-oscuro);
+    }
+
+    table {
+      width: 100%;
+      background-color: var(--blanco);
+      border-collapse: collapse;
+      border: 1px solid var(--gris-borde);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--gris-borde);
+    }
+
+    th {
+      background-color: var(--azul);
+      color: var(--blanco);
+      text-align: left;
+    }
+
+    tr:hover {
+      background-color: #f0f9ff;
+    }
+
+    #clienteForm {
+      display: none;
+      margin-top: 20px;
+      background: var(--blanco);
+      padding: 20px;
+      width: 300px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    input {
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid var(--gris-borde);
+      border-radius: 5px;
+    }
+
+    #btnRegistrarCliente,
+    #btnAgregarCliente {
+      background-color: var(--azul);
+      color: white;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #btnRegistrarCliente:hover,
+    #btnAgregarCliente:hover {
+      background-color: #2563eb;
+    }
+
+    #filtroClientes {
+      margin: 15px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    .accion-btn {
+      margin-right: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      border: none;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .editar {
+      background-color: var(--verde);
+    }
+
+    .editar:hover {
+      background-color: #059669;
+    }
+
+    .eliminar {
+      background-color: var(--rojo);
+    }
+
+    .eliminar:hover {
+      background-color: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <a href="./index.html">Inicio</a>
+    <a href="./pedidos.html">Pedidos</a>
+    <a href="./inventario.html">Inventarios</a>
+    <a href="./cliente.html">Cliente</a>
+    <a href="./control.html">Ctl.Personal</a>
+  </div>
+  <div class="main">
+    <img src="img/erp.png" alt="Logo Unicentro ERP" class="logo">
+    <div class="quienes-somos">
+      <h2>Quiénes somos</h2>
+      <p>En Unicentro ERP nos especializamos en brindar soluciones tecnológicas de gestión empresarial para microempresas del sector de impresión y gigantografía. Nuestro software está diseñado para optimizar los procesos, mejorar la productividad y facilitar la toma de decisiones estratégicas en tiempo real. Nos comprometemos a ofrecer un sistema intuitivo, eficiente y confiable que permita a nuestros clientes mejorar su competitividad en el mercado.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Unicentro ERP - Control de Personal</title>
+  <style>
+    :root {
+      --azul-oscuro: #1e1e2f;
+      --azul: #3b82f6;
+      --gris-fondo: #f3f4f6;
+      --blanco: #ffffff;
+      --gris-borde: #e5e7eb;
+      --verde: #10b981;
+      --rojo: #ef4444;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--gris-fondo);
+      color: #111827;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: var(--azul-oscuro);
+      color: var(--blanco);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      padding-top: 40px;
+    }
+
+    .sidebar a {
+      color: var(--blanco);
+      text-decoration: none;
+      padding: 15px 20px;
+      font-size: 18px;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #2c2c44;
+    }
+
+    .main {
+      margin-left: 220px;
+      padding: 30px;
+    }
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: var(--azul-oscuro);
+    }
+
+    table {
+      width: 100%;
+      background-color: var(--blanco);
+      border-collapse: collapse;
+      border: 1px solid var(--gris-borde);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--gris-borde);
+    }
+
+    th {
+      background-color: var(--azul);
+      color: var(--blanco);
+      text-align: left;
+    }
+
+    tr:hover {
+      background-color: #f0f9ff;
+    }
+
+    #controlPersonalForm {
+      display: none;
+      margin-top: 25px;
+      background: var(--blanco);
+      padding: 20px;
+      width: 350px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    input {
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid var(--gris-borde);
+      border-radius: 5px;
+    }
+
+    #btnRegistrarEmpleado,
+    #btnAgregarEmpleado {
+      background-color: var(--azul);
+      color: white;
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #btnRegistrarEmpleado:hover,
+    #btnAgregarEmpleado:hover {
+      background-color: #2563eb;
+    }
+
+    .accion-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      margin-right: 5px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .editar {
+      background-color: var(--verde);
+    }
+
+    .editar:hover {
+      background-color: #059669;
+    }
+
+    .eliminar {
+      background-color: var(--rojo);
+    }
+
+    .eliminar:hover {
+      background-color: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <a href="./index.html">Inicio</a>
+    <a href="./pedidos.html">Pedidos</a>
+    <a href="./inventario.html">Inventarios</a>
+    <a href="./cliente.html">Cliente</a>
+    <a href="./control.html">Ctl. Personal</a>
+  </div>
+
+  <div class="main">
+    <h2>Control de Personal</h2>
+
+    <table id="tablaControlPersonal">
+      <thead>
+        <tr>
+          <th>Empleado</th>
+          <th>Fecha</th>
+          <th>Entrada</th>
+          <th>Salida</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Laura Gomez</td><td>23/02/2025</td><td>8:15</td><td>19:00</td><td></td></tr>
+        <tr><td>Javier Torres</td><td>04/03/2025</td><td>7:30</td><td>20:00</td><td></td></tr>
+        <tr><td>Miguel Ávila</td><td>19/03/2025</td><td>8:30</td><td>20:30</td><td></td></tr>
+        <tr><td>Mariana López</td><td>13/04/2025</td><td>9:00</td><td>21:00</td><td></td></tr>
+        <tr><td>Eduardo Quispe</td><td>25/04/2025</td><td>8:00</td><td>21:30</td><td></td></tr>
+      </tbody>
+    </table>
+
+    <button id="btnRegistrarEmpleado">Registrar Nuevo Empleado</button>
+
+    <form id="controlPersonalForm">
+      <div class="form-group">
+        <label for="empleado">Empleado:</label>
+        <input type="text" id="empleado" placeholder="Nombre del empleado">
+      </div>
+      <div class="form-group">
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha">
+      </div>
+      <div class="form-group">
+        <label for="entrada">Entrada (hh:mm):</label>
+        <input type="time" id="entrada">
+      </div>
+      <div class="form-group">
+        <label for="salida">Salida (hh:mm):</label>
+        <input type="time" id="salida">
+      </div>
+      <button id="btnAgregarEmpleado" type="button">Registrar Empleado</button>
+    </form>
+  </div>
+
+  <script>
+    let filaEditando = null;
+
+    function formatearFecha(fecha) {
+      const fechaObj = new Date(fecha);
+      const dia = String(fechaObj.getDate()).padStart(2, '0');
+      const mes = String(fechaObj.getMonth() + 1).padStart(2, '0');
+      const anio = fechaObj.getFullYear();
+      return `${dia}/${mes}/${anio}`;
+    }
+
+    document.getElementById("btnRegistrarEmpleado").addEventListener("click", () => {
+      document.getElementById("controlPersonalForm").style.display = "flex";
+      document.getElementById("btnAgregarEmpleado").textContent = "Registrar Empleado";
+      filaEditando = null;
+    });
+
+    document.getElementById("btnAgregarEmpleado").addEventListener("click", () => {
+      const empleado = document.getElementById("empleado").value;
+      const fecha = document.getElementById("fecha").value;
+      const entrada = document.getElementById("entrada").value;
+      const salida = document.getElementById("salida").value;
+
+      const fechaRegex = /^\d{4}-\d{2}-\d{2}$/;
+      const horaRegex = /^(0?[0-9]|1[0-9]|2[0-3]):([0-5]?[0-9])$/;
+
+      if (!empleado || !fecha || !entrada || !salida) {
+        alert("Por favor completa todos los campos.");
+      } else if (!fechaRegex.test(fecha)) {
+        alert("La fecha debe tener el formato yyyy-mm-dd.");
+      } else if (!horaRegex.test(entrada) || !horaRegex.test(salida)) {
+        alert("La hora debe tener el formato hh:mm.");
+      } else {
+        if (filaEditando) {
+          filaEditando.cells[0].textContent = empleado;
+          filaEditando.cells[1].textContent = formatearFecha(fecha);
+          filaEditando.cells[2].textContent = entrada;
+          filaEditando.cells[3].textContent = salida;
+          filaEditando = null;
+        } else {
+          const tabla = document.querySelector("#tablaControlPersonal tbody");
+          const fila = tabla.insertRow();
+
+          fila.insertCell(0).textContent = empleado;
+          fila.insertCell(1).textContent = formatearFecha(fecha);
+          fila.insertCell(2).textContent = entrada;
+          fila.insertCell(3).textContent = salida;
+          const acciones = fila.insertCell(4);
+          agregarBotonesAccion(acciones, fila);
+        }
+
+        document.getElementById("controlPersonalForm").reset();
+        document.getElementById("controlPersonalForm").style.display = "none";
+        document.getElementById("btnAgregarEmpleado").textContent = "Registrar Empleado";
+      }
+    });
+
+    function agregarBotonesAccion(celda, fila) {
+      celda.innerHTML = '';
+
+      const btnEditar = document.createElement("button");
+      btnEditar.textContent = "Editar";
+      btnEditar.className = "accion-btn editar";
+      btnEditar.onclick = () => {
+        document.getElementById("empleado").value = fila.cells[0].textContent;
+        const partesFecha = fila.cells[1].textContent.split("/");
+        document.getElementById("fecha").value = `${partesFecha[2]}-${partesFecha[1]}-${partesFecha[0]}`;
+        document.getElementById("entrada").value = fila.cells[2].textContent;
+        document.getElementById("salida").value = fila.cells[3].textContent;
+        document.getElementById("controlPersonalForm").style.display = "flex";
+        document.getElementById("btnAgregarEmpleado").textContent = "Guardar cambios";
+        filaEditando = fila;
+      };
+
+      const btnEliminar = document.createElement("button");
+      btnEliminar.textContent = "Eliminar";
+      btnEliminar.className = "accion-btn eliminar";
+      btnEliminar.onclick = () => {
+        if (confirm("¿Estás seguro de eliminar este registro?")) {
+          fila.remove();
+        }
+      };
+
+      celda.appendChild(btnEditar);
+      celda.appendChild(btnEliminar);
+    }
+
+    document.querySelectorAll("#tablaControlPersonal tbody tr").forEach(fila => {
+      agregarBotonesAccion(fila.cells[4], fila);
+    });
+  </script>
+</body>
+</html>
