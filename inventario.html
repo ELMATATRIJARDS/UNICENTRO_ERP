@@ -1,347 +1,230 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Unicentro ERP - Inventario</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        :root {
-            --azul-oscuro: #1e1e2f;
-            --azul: #3b82f6;
-            --gris-fondo: #f3f4f6;
-            --blanco: #ffffff;
-            --gris-borde: #e5e7eb;
-            --verde: #10b981;
-            --rojo: #ef4444;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--gris-fondo);
-            color: #111827;
-        }
-
-        .sidebar {
-            width: 220px;
-            background-color: var(--azul-oscuro);
-            color: var(--blanco);
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: flex;
-            flex-direction: column;
-            padding-top: 40px;
-        }
-
-        .sidebar a {
-            color: var(--blanco);
-            text-decoration: none;
-            padding: 15px 20px;
-            font-size: 18px;
-            transition: background 0.3s;
-        }
-
-        .sidebar a:hover {
-            background-color: #2c2c44;
-        }
-
-        .main {
-            margin-left: 220px;
-            padding: 30px;
-        }
-
-        h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: var(--azul-oscuro);
-        }
-
-        table {
-            width: 100%;
-            background-color: var(--blanco);
-            border-collapse: collapse;
-            border: 1px solid var(--gris-borde);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--gris-borde);
-        }
-
-        th {
-            background-color: var(--azul);
-            color: var(--blanco);
-            text-align: left;
-        }
-
-        tr:hover {
-            background-color: #f0f9ff;
-        }
-
-        #productoForm {
-            display: none;
-            margin-top: 20px;
-            background: var(--blanco);
-            padding: 20px;
-            width: 250px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        label {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        input, select {
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid var(--gris-borde);
-            border-radius: 5px;
-        }
-
-        #btnRegistrarForm, #btnAgregarProducto {
-            background-color: var(--azul);
-            color: white;
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        #btnRegistrarForm:hover, #btnAgregarProducto:hover {
-            background-color: #2563eb;
-        }
-
-        .accion-btn {
-            margin-right: 5px;
-            padding: 5px 10px;
-            cursor: pointer;
-            border: none;
-            color: white;
-            border-radius: 5px;
-        }
-
-        .editar { background-color: var(--verde); }
-        .editar:hover { background-color: #059669; }
-        .eliminar { background-color: var(--rojo); }
-        .eliminar:hover { background-color: #dc2626; }
-
-        .estado-ok { color: var(--verde); }
-        .estado-alerta { color: orange; }
-
-        /* Botones de exportación */
-        .export-btn {
-            padding: 8px 15px;
-            margin-right: 8px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: transform .2s, opacity .2s;
-        }
-
-        .export-btn img { width: 20px; height: 20px; }
-        .csv-btn { background: #3b82f6; }
-        .csv-btn:hover { background: #2563eb; transform: scale(1.05); }
-        .excel-btn { background: #16a34a; }
-        .excel-btn:hover { background: #15803d; transform: scale(1.05); }
-        .pdf-btn { background: #dc2626; }
-        .pdf-btn:hover { background: #b91c1c; transform: scale(1.05); }
-    </style>
+  <meta charset="UTF-8">
+  <title>Unicentro ERP - Inventario</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --azul-oscuro: #1e1e2f;
+      --azul: #3b82f6;
+      --gris-fondo: #f3f4f6;
+      --blanco: #ffffff;
+      --gris-borde: #e5e7eb;
+      --verde: #10b981;
+      --rojo: #ef4444;
+    }
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--gris-fondo); color: #111827; }
+    .sidebar { width: 220px; background: var(--azul-oscuro); color: var(--blanco); height: 100vh; position: fixed; top: 0; left: 0; padding-top: 40px; display: flex; flex-direction: column; }
+    .sidebar a { color: var(--blanco); text-decoration: none; padding: 15px 20px; font-size: 18px; transition: background .3s; }
+    .sidebar a:hover { background: #2c2c44; }
+    .main { margin-left: 220px; padding: 30px; }
+    h2 { font-size: 28px; margin-bottom: 20px; color: var(--azul-oscuro); }
+    table { width: 100%; background: var(--blanco); border-collapse: collapse; border: 1px solid var(--gris-borde); border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,.05); }
+    th, td { padding: 12px 15px; border-bottom: 1px solid var(--gris-borde); }
+    th { background: var(--azul); color: var(--blanco); text-align: left; }
+    tr:hover { background: #f0f9ff; }
+    #productoForm { display: none; margin-top: 20px; background: var(--blanco); padding: 20px; width: 250px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,.1); display: flex; flex-direction: column; gap: 10px; }
+    label { font-weight: 600; }
+    input, select { padding: 8px; font-size: 16px; border: 1px solid var(--gris-borde); border-radius: 5px; }
+    #btnRegistrarForm, #btnAgregarProducto { background: var(--azul); color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; transition: background .3s; }
+    #btnRegistrarForm:hover, #btnAgregarProducto:hover { background: #2563eb; }
+    .accion-btn { margin-right: 5px; padding: 5px 10px; cursor: pointer; border: none; color: white; border-radius: 5px; }
+    .editar { background: var(--verde); } .editar:hover { background: #059669; }
+    .eliminar { background: var(--rojo); } .eliminar:hover { background: #dc2626; }
+    .estado-ok { color: var(--verde); } .estado-alerta { color: orange; }
+    .export-btn { padding: 8px 15px; margin-right: 8px; border: none; border-radius: 5px; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 5px; transition: transform .2s, opacity .2s; }
+    .export-btn img { width: 20px; height: 20px; }
+    .csv-btn { background: #3b82f6; } .csv-btn:hover { background: #2563eb; transform: scale(1.05); }
+    .excel-btn { background: #16a34a; } .excel-btn:hover { background: #15803d; transform: scale(1.05); }
+    .pdf-btn { background: #dc2626; } .pdf-btn:hover { background: #b91c1c; transform: scale(1.05); }
+  </style>
 </head>
 <body>
-    <div class="sidebar">
-        <a href="./index.html">Inicio</a>
-        <a href="./pedidos.html">Pedidos</a>
-        <a href="./inventario.html">Inventarios</a>
-        <a href="./cliente.html">Cliente</a>
-        <a href="./control.html">Ctl.Personal</a>
-    </div>
-    <div class="main">
-        <h2>Inventario de Materiales</h2>
+  <div class="sidebar">
+    <a href="./index.html">Inicio</a>
+    <a href="./pedidos.html">Pedidos</a>
+    <a href="./inventario.html">Inventarios</a>
+    <a href="./cliente.html">Cliente</a>
+    <a href="./control.html">Ctl.Personal</a>
+  </div>
 
-        <!-- Botones de exportación -->
-        <div style="margin-bottom: 15px;">
-            <button class="export-btn csv-btn" onclick="exportarCSV('tablaInventario')">
-                <img src="https://img.icons8.com/color/24/csv.png" alt="CSV"> CSV
-            </button>
-            <button class="export-btn excel-btn" onclick="exportarExcel('tablaInventario')">
-                <img src="https://img.icons8.com/color/24/microsoft-excel-2019--v1.png" alt="Excel"> Excel
-            </button>
-            <button class="export-btn pdf-btn" onclick="exportarPDF('tablaInventario')">
-                <img src="https://img.icons8.com/color/24/pdf.png" alt="PDF"> PDF
-            </button>
-        </div>
+  <div class="main">
+    <h2>Inventario de Materiales</h2>
 
-        <table id="tablaInventario">
-            <thead>
-                <tr>
-                    <th>Material</th>
-                    <th>Stock Actual</th>
-                    <th>Stock Mínimo</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Tinta</td><td>9L</td><td>4L</td><td><i class="fas fa-check estado-ok"></i></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Papel</td><td>40 Pliegos</td><td>50 Pliegos</td><td><i class="fas fa-exclamation-circle estado-alerta"></i></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Lonas</td><td>45 m²</td><td>20 m²</td><td><i class="fas fa-check estado-ok"></i></td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- Botones de exportación + filtro -->
+    <div style="margin-bottom: 15px;">
+      <button class="export-btn csv-btn" onclick="exportarCSV('tablaInventario')">
+        <img src="https://img.icons8.com/color/24/csv.png" alt="CSV"> CSV
+      </button>
+      <button class="export-btn excel-btn" onclick="exportarExcel('tablaInventario')">
+        <img src="https://img.icons8.com/color/24/microsoft-excel-2019--v1.png" alt="Excel"> Excel
+      </button>
+      <button class="export-btn pdf-btn" onclick="exportarPDF('tablaInventario')">
+        <img src="https://img.icons8.com/color/24/pdf.png" alt="PDF"> PDF
+      </button>
 
-        <button id="btnRegistrarForm">Registrar Nuevo Producto</button>
-
-        <form id="productoForm">
-            <label>Material:</label>
-            <input type="text" id="material">
-
-            <label>Stock Actual:</label>
-            <input type="text" id="stockActual">
-
-            <label>Stock Mínimo:</label>
-            <input type="text" id="stockMinimo">
-
-            <label>Estado:</label>
-            <select id="estado">
-                <option>Ok</option>
-                <option>Alerta</option>
-            </select>
-
-            <button type="button" id="btnAgregarProducto">Registrar Producto</button>
-        </form>
+      <!-- Filtro por estado -->
+      <select id="filtroEstado" style="margin-left:15px; padding:6px; font-size:15px;">
+        <option value="Todos">Todos</option>
+        <option value="Ok">Ok</option>
+        <option value="Alerta">Alerta</option>
+      </select>
     </div>
 
-    <!-- Librerías exportación -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <table id="tablaInventario">
+      <thead>
+        <tr>
+          <th>Material</th>
+          <th>Stock Actual</th>
+          <th>Stock Mínimo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Tinta</td><td>9L</td><td>4L</td><td><i class="fas fa-check estado-ok"></i></td><td></td>
+        </tr>
+        <tr>
+          <td>Papel</td><td>40 Pliegos</td><td>50 Pliegos</td><td><i class="fas fa-exclamation-circle estado-alerta"></i></td><td></td>
+        </tr>
+        <tr>
+          <td>Lonas</td><td>45 m²</td><td>20 m²</td><td><i class="fas fa-check estado-ok"></i></td><td></td>
+        </tr>
+      </tbody>
+    </table>
 
-    <script>
-        let filaEditando = null;
+    <button id="btnRegistrarForm">Registrar Nuevo Producto</button>
 
-        document.getElementById("btnRegistrarForm").addEventListener("click", () => {
-            document.getElementById("productoForm").style.display = "block";
-            document.getElementById("btnAgregarProducto").textContent = "Registrar producto";
-            filaEditando = null;
-        });
+    <form id="productoForm">
+      <label>Material:</label><input type="text" id="material">
+      <label>Stock Actual:</label><input type="text" id="stockActual">
+      <label>Stock Mínimo:</label><input type="text" id="stockMinimo">
+      <label>Estado:</label>
+      <select id="estado"><option>Ok</option><option>Alerta</option></select>
+      <button type="button" id="btnAgregarProducto">Registrar Producto</button>
+    </form>
+  </div>
 
-        document.getElementById("btnAgregarProducto").addEventListener("click", () => {
-            const material = document.getElementById("material").value;
-            const stockActual = document.getElementById("stockActual").value;
-            const stockMinimo = document.getElementById("stockMinimo").value;
-            const estado = document.getElementById("estado").value;
+  <!-- Librerías exportación -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
-            if (material && stockActual && stockMinimo && estado) {
-                const tabla = document.getElementById("tablaInventario").getElementsByTagName('tbody')[0];
+  <script>
+    let filaEditando = null;
 
-                if (filaEditando) {
-                    filaEditando.cells[0].textContent = material;
-                    filaEditando.cells[1].textContent = stockActual;
-                    filaEditando.cells[2].textContent = stockMinimo;
-                    filaEditando.cells[3].innerHTML = estado === "Ok"
-                        ? '<i class="fas fa-check estado-ok"></i>'
-                        : '<i class="fas fa-exclamation-circle estado-alerta"></i>';
-                    filaEditando = null;
-                } else {
-                    const fila = tabla.insertRow();
-                    fila.insertCell(0).textContent = material;
-                    fila.insertCell(1).textContent = stockActual;
-                    fila.insertCell(2).textContent = stockMinimo;
-                    fila.insertCell(3).innerHTML = estado === "Ok"
-                        ? '<i class="fas fa-check estado-ok"></i>'
-                        : '<i class="fas fa-exclamation-circle estado-alerta"></i>';
-                    const acciones = fila.insertCell(4);
-                    agregarBotonesAccion(acciones, fila);
-                }
+    document.getElementById("btnRegistrarForm").addEventListener("click", () => {
+      document.getElementById("productoForm").style.display = "block";
+      document.getElementById("btnAgregarProducto").textContent = "Registrar producto";
+      filaEditando = null;
+    });
 
-                document.getElementById("productoForm").reset();
-                document.getElementById("productoForm").style.display = "none";
-                document.getElementById("btnAgregarProducto").textContent = "Registrar producto";
-                aplicarFiltro();
-            } else {
-                alert("Por favor completa todos los campos.");
-            }
-        });
+    document.getElementById("btnAgregarProducto").addEventListener("click", () => {
+      const material = document.getElementById("material").value;
+      const stockActual = document.getElementById("stockActual").value;
+      const stockMinimo = document.getElementById("stockMinimo").value;
+      const estado = document.getElementById("estado").value;
 
-        function agregarBotonesAccion(celda, fila) {
-            const btnEditar = document.createElement("button");
-            btnEditar.textContent = "Editar";
-            btnEditar.classList.add("accion-btn", "editar");
-            btnEditar.onclick = () => {
-                filaEditando = fila;
-                document.getElementById("material").value = fila.cells[0].textContent;
-                document.getElementById("stockActual").value = fila.cells[1].textContent;
-                document.getElementById("stockMinimo").value = fila.cells[2].textContent;
-                document.getElementById("estado").value = fila.cells[3].querySelector("i").classList.contains("estado-ok") ? "Ok" : "Alerta";
-                document.getElementById("productoForm").style.display = "block";
-                document.getElementById("btnAgregarProducto").textContent = "Actualizar producto";
-            };
-            const btnEliminar = document.createElement("button");
-            btnEliminar.textContent = "Eliminar";
-            btnEliminar.classList.add("accion-btn", "eliminar");
-            btnEliminar.onclick = () => {
-                fila.remove();
-            };
-            celda.appendChild(btnEditar);
-            celda.appendChild(btnEliminar);
+      if (material && stockActual && stockMinimo && estado) {
+        const tabla = document.getElementById("tablaInventario").getElementsByTagName('tbody')[0];
+        if (filaEditando) {
+          filaEditando.cells[0].textContent = material;
+          filaEditando.cells[1].textContent = stockActual;
+          filaEditando.cells[2].textContent = stockMinimo;
+          filaEditando.cells[3].innerHTML = estado === "Ok"
+            ? '<i class="fas fa-check estado-ok"></i>'
+            : '<i class="fas fa-exclamation-circle estado-alerta"></i>';
+          filaEditando = null;
+        } else {
+          const fila = tabla.insertRow();
+          fila.insertCell(0).textContent = material;
+          fila.insertCell(1).textContent = stockActual;
+          fila.insertCell(2).textContent = stockMinimo;
+          fila.insertCell(3).innerHTML = estado === "Ok"
+            ? '<i class="fas fa-check estado-ok"></i>'
+            : '<i class="fas fa-exclamation-circle estado-alerta"></i>';
+          const acciones = fila.insertCell(4);
+          agregarBotonesAccion(acciones, fila);
         }
+        document.getElementById("productoForm").reset();
+        document.getElementById("productoForm").style.display = "none";
+        document.getElementById("btnAgregarProducto").textContent = "Registrar producto";
+        aplicarFiltro(); // aplicar filtro después de registrar
+      } else {
+        alert("Por favor completa todos los campos.");
+      }
+    });
 
-        // Inicializar botones de acciones existentes
-        document.querySelectorAll("#tablaInventario tbody tr").forEach(fila => {
-            agregarBotonesAccion(fila.cells[4], fila);
+    function agregarBotonesAccion(celda, fila) {
+      const btnEditar = document.createElement("button");
+      btnEditar.textContent = "Editar";
+      btnEditar.classList.add("accion-btn", "editar");
+      btnEditar.onclick = () => {
+        filaEditando = fila;
+        document.getElementById("material").value = fila.cells[0].textContent;
+        document.getElementById("stockActual").value = fila.cells[1].textContent;
+        document.getElementById("stockMinimo").value = fila.cells[2].textContent;
+        document.getElementById("estado").value = fila.cells[3].querySelector("i").classList.contains("estado-ok") ? "Ok" : "Alerta";
+        document.getElementById("productoForm").style.display = "block";
+        document.getElementById("btnAgregarProducto").textContent = "Actualizar producto";
+      };
+      const btnEliminar = document.createElement("button");
+      btnEliminar.textContent = "Eliminar";
+      btnEliminar.classList.add("accion-btn", "eliminar");
+      btnEliminar.onclick = () => { fila.remove(); };
+      celda.appendChild(btnEditar);
+      celda.appendChild(btnEliminar);
+    }
+
+    // Inicializar botones de acciones
+    document.querySelectorAll("#tablaInventario tbody tr").forEach(fila => {
+      agregarBotonesAccion(fila.cells[4], fila);
+    });
+
+    // -------- FILTRO POR ESTADO --------
+    document.getElementById("filtroEstado").addEventListener("change", aplicarFiltro);
+    function aplicarFiltro() {
+      const filtro = document.getElementById("filtroEstado").value;
+      document.querySelectorAll("#tablaInventario tbody tr").forEach(fila => {
+        const icono = fila.cells[3].querySelector("i");
+        const esOk = icono.classList.contains("estado-ok");
+        if (filtro === "Todos" ||
+            (filtro === "Ok" && esOk) ||
+            (filtro === "Alerta" && !esOk)) {
+          fila.style.display = "";
+        } else {
+          fila.style.display = "none";
+        }
+      });
+    }
+    aplicarFiltro(); // inicial
+
+    // -------- EXPORTAR --------
+    function exportarCSV(idTabla) {
+      const tabla = document.getElementById(idTabla);
+      let csv = [];
+      tabla.querySelectorAll("tr").forEach(fila => {
+        let filaDatos = [];
+        fila.querySelectorAll("th, td").forEach((celda, j, arr) => {
+          if (j < arr.length - 1) filaDatos.push(celda.innerText);
         });
+        csv.push(filaDatos.join(","));
+      });
+      const link = document.createElement("a");
+      link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv.join("\n"));
+      link.download = "inventario.csv";
+      link.click();
+    }
 
-        // Exportaciones
-        function exportarCSV(idTabla) {
-            const tabla = document.getElementById(idTabla);
-            let csv = [];
-            tabla.querySelectorAll("tr").forEach(fila => {
-                let filaDatos = [];
-                fila.querySelectorAll("th, td").forEach((celda, j, arr) => {
-                    if (j < arr.length - 1) filaDatos.push(celda.innerText);
-                });
-                csv.push(filaDatos.join(","));
-            });
-            const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", "inventario.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function exportarExcel(idTabla) {
-            const tabla = document.getElementById(idTabla);
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.table_to_sheet(tabla);
-            XLSX.utils.book_append_sheet(wb, ws, "Inventario");
-            XLSX.writeFile(wb, "inventario.xlsx");
-        }
+    function exportarExcel(idTabla) {
+      const tabla = document.getElementById(idTabla);
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.table_to_sheet(tabla);
+      XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+      XLSX.writeFile(wb, "inventario.xlsx");
+    }
 
     function exportarPDF(idTabla) {
     const { jsPDF } = window.jspdf;
@@ -376,7 +259,7 @@
         data.push(filaDatos);
     });
 
-    // Dibujar tabla con íconos en estado
+    // Dibujar tabla (solo texto)
     doc.autoTable({
         head: [data[0]],
         body: data.slice(1),
@@ -384,34 +267,12 @@
         theme: 'grid',
         headStyles: { fillColor: [59, 130, 246], textColor: 255 },
         bodyStyles: { textColor: 0 },
-        styles: { halign: 'center', fontSize: 11 },
-
-        didDrawCell: function (dataCell) {
-            if (dataCell.section === "body" && dataCell.column.index === 3) {
-                const value = dataCell.cell.raw;
-                const img = new Image();
-
-                if (value === "OK") {
-                    img.src = "img/c";  // tu ruta al archivo ✔
-                } else if (value === "ALERTA") {
-                    img.src = "img/alert.png";  // tu ruta al archivo ⚠
-                }
-
-                if (img.src) {
-                    img.onload = function () {
-                        const x = dataCell.cell.x + (dataCell.cell.width / 2) - 4;
-                        const y = dataCell.cell.y + 2;
-                        doc.addImage(img, "PNG", x, y, 8, 8);
-                    };
-                }
-            }
-        }
+        styles: { halign: 'center', fontSize: 11 }
     });
 
     // Guardar PDF
     doc.save("inventario.pdf");
 }
-
-    </script>
+  </script>
 </body>
 </html>
