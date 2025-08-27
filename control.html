@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Unicentro ERP - Control de Personal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
       --azul-oscuro: #1e1e2f;
@@ -12,6 +13,8 @@
       --gris-borde: #e5e7eb;
       --verde: #10b981;
       --rojo: #ef4444;
+      --naranja: #f97316;
+      --amarillo: #facc15;
     }
 
     body {
@@ -67,8 +70,7 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     }
 
-    th,
-    td {
+    th, td {
       padding: 12px 15px;
       border-bottom: 1px solid var(--gris-borde);
     }
@@ -81,6 +83,53 @@
 
     tr:hover {
       background-color: #f0f9ff;
+    }
+
+    /* 🔹 Botones de exportación */
+    .export-buttons {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .export-btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: white;
+      transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    .export-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .csv-btn { background-color: #06b6d4; }
+    .csv-btn:hover {
+      background-color: #0891b2;
+      transform: scale(1.08);
+      box-shadow: 0px 4px 12px rgba(6,182,212,0.5);
+    }
+
+    .excel-btn { background-color: #22c55e; }
+    .excel-btn:hover {
+      background-color: #16a34a;
+      transform: scale(1.08);
+      box-shadow: 0px 4px 12px rgba(34,197,94,0.5);
+    }
+
+    .pdf-btn { background-color: #ef4444; }
+    .pdf-btn:hover {
+      background-color: #dc2626;
+      transform: scale(1.08);
+      box-shadow: 0px 4px 12px rgba(239,68,68,0.5);
     }
 
     #controlPersonalForm {
@@ -140,21 +189,11 @@
       cursor: pointer;
     }
 
-    .editar {
-      background-color: var(--verde);
-    }
+    .editar { background-color: var(--verde); }
+    .editar:hover { background-color: #059669; }
 
-    .editar:hover {
-      background-color: #059669;
-    }
-
-    .eliminar {
-      background-color: var(--rojo);
-    }
-
-    .eliminar:hover {
-      background-color: #dc2626;
-    }
+    .eliminar { background-color: var(--rojo); }
+    .eliminar:hover { background-color: #dc2626; }
   </style>
 </head>
 <body>
@@ -169,6 +208,20 @@
   <div class="main">
     <h2>Control de Personal</h2>
 
+    <!-- 🔹 Botones de exportación -->
+    <div class="export-buttons">
+      <button class="export-btn csv-btn" onclick="exportarCSV('tablaControlPersonal')">
+        <img src="https://img.icons8.com/color/24/csv.png" alt="CSV"> CSV
+      </button>
+      <button class="export-btn excel-btn" onclick="exportarExcel('tablaControlPersonal')">
+        <img src="https://img.icons8.com/color/24/microsoft-excel-2019--v1.png" alt="Excel"> Excel
+      </button>
+      <button class="export-btn pdf-btn" onclick="exportarPDF('tablaControlPersonal')">
+        <img src="https://img.icons8.com/color/24/pdf.png" alt="PDF"> PDF
+      </button>
+    </div>
+
+    <!-- Tabla de empleados -->
     <table id="tablaControlPersonal">
       <thead>
         <tr>
@@ -211,14 +264,17 @@
     </form>
   </div>
 
+  <!-- librerías -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
   <script>
     let filaEditando = null;
 
+    // ✅ Formateo sin new Date (evita un día menos)
     function formatearFecha(fecha) {
-      const fechaObj = new Date(fecha);
-      const dia = String(fechaObj.getDate()).padStart(2, '0');
-      const mes = String(fechaObj.getMonth() + 1).padStart(2, '0');
-      const anio = fechaObj.getFullYear();
+      const [anio, mes, dia] = fecha.split("-");
       return `${dia}/${mes}/${anio}`;
     }
 
@@ -301,6 +357,80 @@
     document.querySelectorAll("#tablaControlPersonal tbody tr").forEach(fila => {
       agregarBotonesAccion(fila.cells[4], fila);
     });
+
+    // --- Exportar CSV ---
+    function exportarCSV(idTabla) {
+      const filas = document.querySelectorAll(`#${idTabla} tr`);
+      let csv = [];
+      filas.forEach(fila => {
+        let cols = fila.querySelectorAll("th, td");
+        let data = [];
+        cols.forEach((c, i) => {
+          if (i < cols.length - 1) data.push(c.innerText);
+        });
+        csv.push(data.join(","));
+      });
+
+      let blob = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+      let link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${idTabla}.csv`;
+      link.click();
+    }
+
+    // --- Exportar Excel ---
+    function exportarExcel(idTabla) {
+      let tabla = document.getElementById(idTabla);
+      let tablaClon = tabla.cloneNode(true);
+      tablaClon.querySelectorAll("tr").forEach(fila => fila.deleteCell(-1));
+      let wb = XLSX.utils.table_to_book(tablaClon, { sheet: "Hoja1" });
+      XLSX.writeFile(wb, `${idTabla}.xlsx`);
+    }
+
+    // --- Exportar PDF ---
+    async function exportarPDF(idTabla) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Reporte - Control de Personal", 14, 16);
+
+    const fecha = new Date();
+    const fechaStr = fecha.toLocaleDateString("es-PE") + " " + fecha.toLocaleTimeString("es-PE");
+    doc.setFontSize(12);
+    doc.text("Fecha de descarga: " + fechaStr, 14, 22);
+
+    const tabla = document.getElementById(idTabla);
+    let body = [];
+    tabla.querySelectorAll("tbody tr").forEach(fila => {
+        let rowData = [];
+        fila.querySelectorAll("td").forEach((celda, i, arr) => {
+            if(i < arr.length-1) rowData.push(celda.innerText);
+        });
+        body.push(rowData);
+    });
+
+    let head = [];
+    tabla.querySelectorAll("thead tr").forEach(fila => {
+        let rowData = [];
+        fila.querySelectorAll("th").forEach((celda, i, arr) => {
+            if(i < arr.length-1) rowData.push(celda.innerText);
+        });
+        head.push(rowData);
+    });
+
+    doc.autoTable({
+        head: head,
+        body: body,
+        startY: 26,
+        theme: 'grid',
+        headStyles: { fillColor:[59,130,246], textColor:255 },
+        bodyStyles: { textColor:0 },
+        styles: { halign:'center', fontSize:10 }
+    });
+
+    doc.save("control_personal.pdf");
+}
   </script>
 </body>
 </html>
