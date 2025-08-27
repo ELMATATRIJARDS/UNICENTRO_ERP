@@ -88,7 +88,7 @@
             margin-top: 20px;
             background: var(--blanco);
             padding: 20px;
-            width: 220px;
+            width: 250px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -123,12 +123,6 @@
             background-color: #2563eb;
         }
 
-        #filtroEstado {
-            margin: 15px 0;
-            padding: 10px;
-            font-size: 16px;
-        }
-
         .accion-btn {
             margin-right: 5px;
             padding: 5px 10px;
@@ -138,48 +132,60 @@
             border-radius: 5px;
         }
 
-        .editar {
-            background-color: var(--verde);
+        .editar { background-color: var(--verde); }
+        .editar:hover { background-color: #059669; }
+        .eliminar { background-color: var(--rojo); }
+        .eliminar:hover { background-color: #dc2626; }
+
+        .estado-ok { color: var(--verde); }
+        .estado-alerta { color: orange; }
+
+        /* Botones de exportación */
+        .export-btn {
+            padding: 8px 15px;
+            margin-right: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: transform .2s, opacity .2s;
         }
 
-        .editar:hover {
-            background-color: #059669;
-        }
-
-        .eliminar {
-            background-color: var(--rojo);
-        }
-
-        .eliminar:hover {
-            background-color: #dc2626;
-        }
-
-        .estado-ok {
-            color: var(--verde);
-        }
-
-        .estado-alerta {
-            color: orange;
-        }
+        .export-btn img { width: 20px; height: 20px; }
+        .csv-btn { background: #3b82f6; }
+        .csv-btn:hover { background: #2563eb; transform: scale(1.05); }
+        .excel-btn { background: #16a34a; }
+        .excel-btn:hover { background: #15803d; transform: scale(1.05); }
+        .pdf-btn { background: #dc2626; }
+        .pdf-btn:hover { background: #b91c1c; transform: scale(1.05); }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <a href="./index.html">Inicio</a>
         <a href="./pedidos.html">Pedidos</a>
-        <a href="./iventario.html">Inventarios</a>
+        <a href="./inventario.html">Inventarios</a>
         <a href="./cliente.html">Cliente</a>
         <a href="./control.html">Ctl.Personal</a>
     </div>
     <div class="main">
         <h2>Inventario de Materiales</h2>
 
-        <label for="filtroEstado">Filtrar por estado:</label>
-        <select id="filtroEstado">
-            <option value="Todos">Todos</option>
-            <option value="Ok">Stock OK</option>
-            <option value="Alerta">Alerta de stock</option>
-        </select>
+        <!-- Botones de exportación -->
+        <div style="margin-bottom: 15px;">
+            <button class="export-btn csv-btn" onclick="exportarCSV('tablaInventario')">
+                <img src="https://img.icons8.com/color/24/csv.png" alt="CSV"> CSV
+            </button>
+            <button class="export-btn excel-btn" onclick="exportarExcel('tablaInventario')">
+                <img src="https://img.icons8.com/color/24/microsoft-excel-2019--v1.png" alt="Excel"> Excel
+            </button>
+            <button class="export-btn pdf-btn" onclick="exportarPDF('tablaInventario')">
+                <img src="https://img.icons8.com/color/24/pdf.png" alt="PDF"> PDF
+            </button>
+        </div>
 
         <table id="tablaInventario">
             <thead>
@@ -209,7 +215,7 @@
 
         <button id="btnRegistrarForm">Registrar Nuevo Producto</button>
 
-        <div id="productoForm">
+        <form id="productoForm">
             <label>Material:</label>
             <input type="text" id="material">
 
@@ -225,9 +231,14 @@
                 <option>Alerta</option>
             </select>
 
-            <button id="btnAgregarProducto">Registrar Producto</button>
-        </div>
+            <button type="button" id="btnAgregarProducto">Registrar Producto</button>
+        </form>
     </div>
+
+    <!-- Librerías exportación -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
     <script>
         let filaEditando = null;
@@ -245,6 +256,8 @@
             const estado = document.getElementById("estado").value;
 
             if (material && stockActual && stockMinimo && estado) {
+                const tabla = document.getElementById("tablaInventario").getElementsByTagName('tbody')[0];
+
                 if (filaEditando) {
                     filaEditando.cells[0].textContent = material;
                     filaEditando.cells[1].textContent = stockActual;
@@ -254,13 +267,11 @@
                         : '<i class="fas fa-exclamation-circle estado-alerta"></i>';
                     filaEditando = null;
                 } else {
-                    const tabla = document.getElementById("tablaInventario").getElementsByTagName('tbody')[0];
                     const fila = tabla.insertRow();
                     fila.insertCell(0).textContent = material;
                     fila.insertCell(1).textContent = stockActual;
                     fila.insertCell(2).textContent = stockMinimo;
-                    const estadoCelda = fila.insertCell(3);
-                    estadoCelda.innerHTML = estado === "Ok"
+                    fila.insertCell(3).innerHTML = estado === "Ok"
                         ? '<i class="fas fa-check estado-ok"></i>'
                         : '<i class="fas fa-exclamation-circle estado-alerta"></i>';
                     const acciones = fila.insertCell(4);
@@ -276,51 +287,131 @@
             }
         });
 
-        document.getElementById("filtroEstado").addEventListener("change", aplicarFiltro);
-
-        function aplicarFiltro() {
-            const filtro = document.getElementById("filtroEstado").value;
-            const filas = document.querySelectorAll("#tablaInventario tbody tr");
-
-            filas.forEach(fila => {
-                const estado = fila.cells[3].querySelector("i").classList.contains("estado-ok") ? "Ok" : "Alerta";
-                fila.style.display = (filtro === "Todos" || estado === filtro) ? "" : "none";
-            });
-        }
-
         function agregarBotonesAccion(celda, fila) {
-            celda.innerHTML = "";
-
             const btnEditar = document.createElement("button");
             btnEditar.textContent = "Editar";
             btnEditar.classList.add("accion-btn", "editar");
-            btnEditar.addEventListener("click", () => {
+            btnEditar.onclick = () => {
+                filaEditando = fila;
                 document.getElementById("material").value = fila.cells[0].textContent;
                 document.getElementById("stockActual").value = fila.cells[1].textContent;
                 document.getElementById("stockMinimo").value = fila.cells[2].textContent;
                 document.getElementById("estado").value = fila.cells[3].querySelector("i").classList.contains("estado-ok") ? "Ok" : "Alerta";
                 document.getElementById("productoForm").style.display = "block";
                 document.getElementById("btnAgregarProducto").textContent = "Actualizar producto";
-                filaEditando = fila;
-            });
-
+            };
             const btnEliminar = document.createElement("button");
             btnEliminar.textContent = "Eliminar";
             btnEliminar.classList.add("accion-btn", "eliminar");
-            btnEliminar.addEventListener("click", () => {
-                if (confirm("¿Estás seguro de eliminar este producto?")) {
-                    fila.remove();
-                }
-            });
-
+            btnEliminar.onclick = () => {
+                fila.remove();
+            };
             celda.appendChild(btnEditar);
             celda.appendChild(btnEliminar);
         }
 
+        // Inicializar botones de acciones existentes
         document.querySelectorAll("#tablaInventario tbody tr").forEach(fila => {
-            const celdaAcciones = fila.cells[4];
-            agregarBotonesAccion(celdaAcciones, fila);
+            agregarBotonesAccion(fila.cells[4], fila);
         });
+
+        // Exportaciones
+        function exportarCSV(idTabla) {
+            const tabla = document.getElementById(idTabla);
+            let csv = [];
+            tabla.querySelectorAll("tr").forEach(fila => {
+                let filaDatos = [];
+                fila.querySelectorAll("th, td").forEach((celda, j, arr) => {
+                    if (j < arr.length - 1) filaDatos.push(celda.innerText);
+                });
+                csv.push(filaDatos.join(","));
+            });
+            const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", "inventario.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportarExcel(idTabla) {
+            const tabla = document.getElementById(idTabla);
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.table_to_sheet(tabla);
+            XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+            XLSX.writeFile(wb, "inventario.xlsx");
+        }
+
+    function exportarPDF(idTabla) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Título
+    doc.setFontSize(16);
+    doc.text("Reporte - Inventario de Materiales", 14, 16);
+
+    // Fecha
+    const fecha = new Date();
+    const fechaStr = fecha.toLocaleDateString("es-PE") + " " + fecha.toLocaleTimeString("es-PE");
+    doc.setFontSize(12);
+    doc.text("Fecha de descarga: " + fechaStr, 14, 22);
+
+    // Procesar tabla HTML
+    const tabla = document.getElementById(idTabla);
+    let data = [];
+    tabla.querySelectorAll("tr").forEach((fila) => {
+        const filaDatos = [];
+        fila.querySelectorAll("th, td").forEach((celda, j, arr) => {
+            if (j < arr.length - 1) {
+                if (j === 3 && celda.querySelector("i")) {
+                    filaDatos.push(
+                        celda.querySelector("i").classList.contains("estado-ok") ? "OK" : "ALERTA"
+                    );
+                } else {
+                    filaDatos.push(celda.innerText);
+                }
+            }
+        });
+        data.push(filaDatos);
+    });
+
+    // Dibujar tabla con íconos en estado
+    doc.autoTable({
+        head: [data[0]],
+        body: data.slice(1),
+        startY: 28,
+        theme: 'grid',
+        headStyles: { fillColor: [59, 130, 246], textColor: 255 },
+        bodyStyles: { textColor: 0 },
+        styles: { halign: 'center', fontSize: 11 },
+
+        didDrawCell: function (dataCell) {
+            if (dataCell.section === "body" && dataCell.column.index === 3) {
+                const value = dataCell.cell.raw;
+                const img = new Image();
+
+                if (value === "OK") {
+                    img.src = "img/c";  // tu ruta al archivo ✔
+                } else if (value === "ALERTA") {
+                    img.src = "img/alert.png";  // tu ruta al archivo ⚠
+                }
+
+                if (img.src) {
+                    img.onload = function () {
+                        const x = dataCell.cell.x + (dataCell.cell.width / 2) - 4;
+                        const y = dataCell.cell.y + 2;
+                        doc.addImage(img, "PNG", x, y, 8, 8);
+                    };
+                }
+            }
+        }
+    });
+
+    // Guardar PDF
+    doc.save("inventario.pdf");
+}
+
     </script>
 </body>
 </html>
