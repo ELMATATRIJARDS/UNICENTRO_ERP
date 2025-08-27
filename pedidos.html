@@ -2,7 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Unicentro ERP</title>
+    <title>Unicentro ERP - Pedidos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://kit.fontawesome.com/5d6d5f69a0.js" crossorigin="anonymous"></script>
     <style>
         :root {
             --azul-oscuro: #1e1e2f;
@@ -14,152 +19,45 @@
             --rojo: #ef4444;
         }
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--gris-fondo);
-            color: #111827;
-        }
+        body { margin:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color:var(--gris-fondo); color:#111827; }
 
-        .sidebar {
-            width: 220px;
-            background-color: var(--azul-oscuro);
-            color: var(--blanco);
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: flex;
-            flex-direction: column;
-            padding-top: 40px;
-        }
+        .sidebar { width:220px; background-color:var(--azul-oscuro); color:var(--blanco); height:100vh; position:fixed; top:0; left:0; display:flex; flex-direction:column; padding-top:40px; }
+        .sidebar a { color:var(--blanco); text-decoration:none; padding:15px 20px; font-size:18px; transition: background 0.3s; }
+        .sidebar a:hover { background-color:#2c2c44; }
 
-        .sidebar a {
-            color: var(--blanco);
-            text-decoration: none;
-            padding: 15px 20px;
-            font-size: 18px;
-            transition: background 0.3s;
-        }
+        .main { margin-left:220px; padding:30px; }
 
-        .sidebar a:hover {
-            background-color: #2c2c44;
-        }
+        h2 { font-size:28px; margin-bottom:20px; color:var(--azul-oscuro); }
 
-        .main {
-            margin-left: 220px;
-            padding: 30px;
-        }
+        table { width:100%; background-color:var(--blanco); border-collapse:collapse; border:1px solid var(--gris-borde); border-radius:10px; overflow:hidden; box-shadow:0 4px 8px rgba(0,0,0,0.05); }
+        th, td { padding:12px 15px; border-bottom:1px solid var(--gris-borde); }
+        th { background-color:var(--azul); color:var(--blanco); text-align:left; }
+        tr:hover { background-color:#f0f9ff; }
 
-        h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: var(--azul-oscuro);
-        }
+        #pedidoForm { display:none; margin-top:20px; background:var(--blanco); padding:30px; width:100%; max-width:300px; border-radius:10px; box-shadow:0 4px 4px rgba(0,0,0,0.1); display:flex; flex-direction:column; gap:15px; }
 
-        table {
-            width: 100%;
-            background-color: var(--blanco);
-            border-collapse: collapse;
-            border: 1px solid var(--gris-borde);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
+        label { font-weight:600; margin-bottom:5px; }
+        input, select { padding:10px; font-size:16px; border:1px solid var(--gris-borde); border-radius:5px; width:100%; }
 
-        th,
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--gris-borde);
-        }
+        #btnRegistrarForm, #btnAgregarPedido { background-color:var(--azul); color:white; padding:12px 18px; font-size:16px; border:none; border-radius:5px; cursor:pointer; transition:background 0.3s; width:auto; align-self:flex-start; }
+        #btnRegistrarForm:hover, #btnAgregarPedido:hover { background-color:#2563eb; }
 
-        th {
-            background-color: var(--azul);
-            color: var(--blanco);
-            text-align: left;
-        }
+        #filtroEstado { margin:15px 0; padding:10px; font-size:16px; }
 
-        tr:hover {
-            background-color: #f0f9ff;
-        }
+        .accion-btn { margin-right:5px; padding:5px 10px; cursor:pointer; border:none; color:white; border-radius:5px; }
+        .editar { background-color:var(--verde); }
+        .editar:hover { background-color:#059669; }
+        .eliminar { background-color:var(--rojo); }
+        .eliminar:hover { background-color:#dc2626; }
 
-        #pedidoForm {
-            display: none;
-            margin-top: 20px;
-            background: var(--blanco);
-            padding: 30px;
-            width: 100%;
-            max-width: 300px;
-            border-radius: 10px;
-            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        label {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        input,
-        select {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid var(--gris-borde);
-            border-radius: 5px;
-            width: 100%;
-        }
-
-        #btnRegistrarForm,
-        #btnAgregarPedido {
-            background-color: var(--azul);
-            color: white;
-            padding: 12px 18px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-            width: auto;
-            align-self: flex-start;
-        }
-
-        #btnRegistrarForm:hover,
-        #btnAgregarPedido:hover {
-            background-color: #2563eb;
-        }
-
-        #filtroEstado {
-            margin: 15px 0;
-            padding: 10px;
-            font-size: 16px;
-        }
-
-        .accion-btn {
-            margin-right: 5px;
-            padding: 5px 10px;
-            cursor: pointer;
-            border: none;
-            color: white;
-            border-radius: 5px;
-        }
-
-        .editar {
-            background-color: var(--verde);
-        }
-
-        .editar:hover {
-            background-color: #059669;
-        }
-
-        .eliminar {
-            background-color: var(--rojo);
-        }
-
-        .eliminar:hover {
-            background-color: #dc2626;
-        }
+        .export-btn { padding:10px 15px; margin-right:10px; border:none; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; font-size:15px; font-weight:600; color:white; transition:transform .2s ease, box-shadow .3s ease, background .3s ease; }
+        .export-btn img { width:20px; height:20px; }
+        .export-btn.csv { background-color:#06b6d4; }
+        .export-btn.csv:hover { background-color:#0891b2; transform:scale(1.08); box-shadow:0px 4px 12px rgba(6,182,212,0.5); }
+        .export-btn.excel { background-color:#22c55e; }
+        .export-btn.excel:hover { background-color:#16a34a; transform:scale(1.08); box-shadow:0px 4px 12px rgba(34,197,94,0.5); }
+        .export-btn.pdf { background-color:#ef4444; }
+        .export-btn.pdf:hover { background-color:#dc2626; transform:scale(1.08); box-shadow:0px 4px 12px rgba(239,68,68,0.5); }
     </style>
 </head>
 <body>
@@ -170,6 +68,7 @@
         <a href="./cliente.html">Cliente</a>
         <a href="./control.html">Ctl.Personal</a>
     </div>
+
     <div class="main">
         <h2>Tablero Visual de Pedidos</h2>
 
@@ -182,8 +81,21 @@
         </select>
 
         <h2>Control de Pedidos</h2>
-        
-        <table id="tablaControlPersonal">
+
+        <!-- Botones de exportación -->
+        <div style="margin-bottom: 15px;">
+            <button class="export-btn csv" onclick="exportarCSV('tablaPedidos')">
+              <img src="https://img.icons8.com/color/24/csv.png" alt="CSV"> CSV
+            </button>
+            <button class="export-btn excel" onclick="exportarExcel('tablaPedidos')">
+              <img src="https://img.icons8.com/color/24/microsoft-excel-2019--v1.png" alt="Excel"> Excel
+            </button>
+            <button class="export-btn pdf" onclick="exportarPDF('tablaPedidos')">
+              <img src="https://img.icons8.com/color/24/pdf.png" alt="PDF"> PDF
+            </button>
+        </div>
+
+        <table id="tablaPedidos">
             <thead>
                 <tr>
                     <th>Cliente</th>
@@ -200,32 +112,37 @@
                 <tr><td>Mariana López</td><td>Impresion</td><td>Cancelado</td><td>21/04/2025</td><td></td></tr>
             </tbody>
         </table>
-        
+
         <button id="btnRegistrarForm">Registrar Nuevo Pedido</button>
 
         <div id="pedidoForm">
             <label>Cliente:</label>
             <input type="text" id="cliente">
-
             <label>Tipo de Trabajo:</label>
             <input type="text" id="tipoTrabajo">
-
             <label>Estado:</label>
             <select id="estado">
                 <option>En proceso</option>
                 <option>Entregado</option>
                 <option>Cancelado</option>
             </select>
-
             <label>Fecha de Entrega:</label>
             <input type="date" id="fecha">
-
             <button id="btnAgregarPedido">Registrar pedido</button>
         </div>
     </div>
 
     <script>
         let filaEditando = null;
+
+        const tabla = document.getElementById("tablaPedidos").getElementsByTagName('tbody')[0];
+
+        // Inicializar botones de acciones para filas existentes
+        function inicializarAcciones() {
+            tabla.querySelectorAll("tr").forEach(fila => {
+                agregarBotonesAccion(fila.cells[4], fila);
+            });
+        }
 
         document.getElementById("btnRegistrarForm").addEventListener("click", () => {
             document.getElementById("pedidoForm").style.display = "block";
@@ -239,53 +156,30 @@
             const estado = document.getElementById("estado").value;
             const fecha = document.getElementById("fecha").value;
 
-            if (cliente && tipoTrabajo && estado && fecha) {
-                const tabla = document.getElementById("tablaControlPersonal").getElementsByTagName('tbody')[0];
+            if (!cliente || !tipoTrabajo || !estado || !fecha) return alert("Por favor completa todos los campos.");
 
-                if (filaEditando) {
-                    filaEditando.cells[0].textContent = cliente;
-                    filaEditando.cells[1].textContent = tipoTrabajo;
-                    filaEditando.cells[2].textContent = estado;
-                    filaEditando.cells[3].textContent = new Date(fecha).toLocaleDateString();
-                    filaEditando = null;
-                } else {
-                    const fila = tabla.insertRow();
-                    fila.insertCell(0).textContent = cliente;
-                    fila.insertCell(1).textContent = tipoTrabajo;
-                    fila.insertCell(2).textContent = estado;
-                    fila.insertCell(3).textContent = new Date(fecha).toLocaleDateString();
-                    const acciones = fila.insertCell(4);
-                    agregarBotonesAccion(acciones, fila);
-                }
-
-                document.getElementById("pedidoForm").reset();
-                document.getElementById("pedidoForm").style.display = "none";
-                document.getElementById("btnAgregarPedido").textContent = "Registrar pedido";
-                aplicarFiltro();
+            if (filaEditando) {
+                filaEditando.cells[0].textContent = cliente;
+                filaEditando.cells[1].textContent = tipoTrabajo;
+                filaEditando.cells[2].textContent = estado;
+                filaEditando.cells[3].textContent = formatearFecha(fecha);
+                filaEditando = null;
             } else {
-                alert("Por favor completa todos los campos.");
+                const fila = tabla.insertRow();
+                fila.insertCell(0).textContent = cliente;
+                fila.insertCell(1).textContent = tipoTrabajo;
+                fila.insertCell(2).textContent = estado;
+                fila.insertCell(3).textContent = formatearFecha(fecha);
+                const acciones = fila.insertCell(4);
+                agregarBotonesAccion(acciones, fila);
             }
+
+            document.getElementById("pedidoForm").reset();
+            document.getElementById("pedidoForm").style.display = "none";
         });
-
-        document.getElementById("filtroEstado").addEventListener("change", aplicarFiltro);
-
-        function aplicarFiltro() {
-            const filtro = document.getElementById("filtroEstado").value;
-            const filas = document.querySelectorAll("#tablaControlPersonal tbody tr");
-
-            filas.forEach(fila => {
-                const estado = fila.cells[2].textContent.trim();
-                if (filtro === "Todos" || estado === filtro) {
-                    fila.style.display = "";
-                } else {
-                    fila.style.display = "none";
-                }
-            });
-        }
 
         function agregarBotonesAccion(celda, fila) {
             celda.innerHTML = '';
-
             const btnEditar = document.createElement("button");
             btnEditar.textContent = "Editar";
             btnEditar.className = "accion-btn editar";
@@ -298,31 +192,95 @@
                 filaEditando = fila;
                 document.getElementById("btnAgregarPedido").textContent = "Actualizar pedido";
             };
-
             const btnEliminar = document.createElement("button");
             btnEliminar.textContent = "Eliminar";
             btnEliminar.className = "accion-btn eliminar";
-            btnEliminar.onclick = () => {
-                if (confirm("¿Estás seguro de eliminar este pedido?")) {
-                    fila.remove();
-                }
-            };
-
+            btnEliminar.onclick = () => { if(confirm("¿Eliminar este pedido?")) fila.remove(); };
             celda.appendChild(btnEditar);
             celda.appendChild(btnEliminar);
         }
 
+        function formatearFecha(fechaISO) {
+            const [year, month, day] = fechaISO.split("-");
+            return `${day}/${month}/${year}`;
+        }
+
         function formatearFechaParaInput(fecha) {
-            const fechaObj = new Date(fecha);
-            const year = fechaObj.getFullYear();
-            const month = ("0" + (fechaObj.getMonth() + 1)).slice(-2);
-            const day = ("0" + fechaObj.getDate()).slice(-2);
+            const [day, month, year] = fecha.split("/");
             return `${year}-${month}-${day}`;
         }
-        document.querySelectorAll("#tablaControlPersonal tbody tr").forEach(fila => {
-          agregarBotonesAccion(fila.cells[4], fila);
+
+        // Filtro por estado
+        document.getElementById("filtroEstado").addEventListener("change", () => {
+            const filtro = document.getElementById("filtroEstado").value;
+            tabla.querySelectorAll("tr").forEach(fila => {
+                const estado = fila.cells[2].textContent.trim();
+                fila.style.display = (filtro === "Todos" || estado === filtro) ? "" : "none";
+            });
         });
-        
+
+        inicializarAcciones();
+
+        // === Exportaciones ===
+        function exportarCSV(idTabla) {
+            const filas = document.querySelectorAll(`#${idTabla} tr`);
+            let csv = [];
+            filas.forEach(fila => {
+                let cols = Array.from(fila.querySelectorAll("th, td")).slice(0, -1).map(c => c.innerText);
+                csv.push(cols.join(","));
+            });
+            const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+            saveAs(blob, "pedidos.csv");
+        }
+
+        function exportarExcel(idTabla) {
+            const tabla = document.getElementById(idTabla);
+            const datos = [];
+            tabla.querySelectorAll("tr").forEach(fila => {
+                const filaDatos = [];
+                fila.querySelectorAll("th, td").forEach((celda, i, arr) => { if(i<arr.length-1) filaDatos.push(celda.innerText); });
+                datos.push(filaDatos);
+            });
+            const ws = XLSX.utils.aoa_to_sheet(datos);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Pedidos");
+            XLSX.writeFile(wb, "pedidos.xlsx");
+        }
+
+        function exportarPDF(idTabla) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(16);
+            doc.text("Reporte - Pedidos", 14, 16);
+
+            const fecha = new Date();
+            const fechaStr = fecha.toLocaleDateString("es-PE") + " " + fecha.toLocaleTimeString("es-PE");
+            doc.setFontSize(12);
+            doc.text("Fecha de descarga: " + fechaStr, 14, 22);
+
+            const tabla = document.getElementById(idTabla);
+            let data = [];
+            tabla.querySelectorAll("tr").forEach(fila => {
+                const filaDatos = [];
+                fila.querySelectorAll("th, td").forEach((celda, i, arr) => {
+                    if(i<arr.length-1) filaDatos.push(celda.innerText);
+                });
+                data.push(filaDatos);
+            });
+
+            doc.autoTable({
+                head: [data[0]],
+                body: data.slice(1),
+                startY: 28,
+                theme: 'grid',
+                headStyles: { fillColor:[59,130,246], textColor:255 },
+                bodyStyles: { textColor:0 },
+                styles: { halign:'center', fontSize:10 }
+            });
+
+            doc.save("pedidos.pdf");
+        }
     </script>
 </body>
 </html>
