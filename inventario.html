@@ -176,7 +176,12 @@
       const btnEliminar = document.createElement("button");
       btnEliminar.textContent = "Eliminar";
       btnEliminar.classList.add("accion-btn", "eliminar");
-      btnEliminar.onclick = () => { fila.remove(); };
+      btnEliminar.onclick = () => {
+        if (confirm("¿Estás seguro de eliminar este producto?")) {
+          fila.remove();
+          alert("✅ Producto eliminado correctamente.");
+        }
+      };
       celda.appendChild(btnEditar);
       celda.appendChild(btnEliminar);
     }
