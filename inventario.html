@@ -52,7 +52,7 @@
   <div class="main">
     <h2>Inventario de Materiales</h2>
 
-    <!-- Botones de exportación + filtro -->
+    <!-- Botones de exportación -->
     <div style="margin-bottom: 15px;">
       <button class="export-btn csv-btn" onclick="exportarCSV('tablaInventario')">
         <img src="https://img.icons8.com/color/24/csv.png" alt="CSV"> CSV
@@ -63,9 +63,12 @@
       <button class="export-btn pdf-btn" onclick="exportarPDF('tablaInventario')">
         <img src="https://img.icons8.com/color/24/pdf.png" alt="PDF"> PDF
       </button>
+    </div>
 
-      <!-- Filtro por estado -->
-      <select id="filtroEstado" style="margin-left:15px; padding:6px; font-size:15px;">
+    <!-- Filtro por estado -->
+    <div style="margin-bottom:15px;">
+      <label for="filtroEstado" style="font-weight:600; margin-right:10px;">Filtrar por estado:</label>
+      <select id="filtroEstado" style="padding:8px; font-size:15px; border:1px solid #ccc; border-radius:5px;">
         <option value="Todos">Todos</option>
         <option value="Ok">Ok</option>
         <option value="Alerta">Alerta</option>
@@ -227,40 +230,40 @@
     }
 
     function exportarPDF(idTabla) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-    // Título
-    doc.setFontSize(16);
-    doc.text("Reporte - Inventario de Materiales", 14, 16);
+      // Título
+      doc.setFontSize(16);
+      doc.text("Reporte - Inventario de Materiales", 14, 16);
 
-    // Fecha
-    const fecha = new Date();
-    const fechaStr = fecha.toLocaleDateString("es-PE") + " " + fecha.toLocaleTimeString("es-PE");
-    doc.setFontSize(12);
-    doc.text("Fecha de descarga: " + fechaStr, 14, 22);
+      // Fecha
+      const fecha = new Date();
+      const fechaStr = fecha.toLocaleDateString("es-PE") + " " + fecha.toLocaleTimeString("es-PE");
+      doc.setFontSize(12);
+      doc.text("Fecha de descarga: " + fechaStr, 14, 22);
 
-    // Procesar tabla HTML
-    const tabla = document.getElementById(idTabla);
-    let data = [];
-    tabla.querySelectorAll("tr").forEach((fila) => {
+      // Procesar tabla HTML
+      const tabla = document.getElementById(idTabla);
+      let data = [];
+      tabla.querySelectorAll("tr").forEach((fila) => {
         const filaDatos = [];
         fila.querySelectorAll("th, td").forEach((celda, j, arr) => {
-            if (j < arr.length - 1) {
-                if (j === 3 && celda.querySelector("i")) {
-                    filaDatos.push(
-                        celda.querySelector("i").classList.contains("estado-ok") ? "OK" : "ALERTA"
-                    );
-                } else {
-                    filaDatos.push(celda.innerText);
-                }
+          if (j < arr.length - 1) {
+            if (j === 3 && celda.querySelector("i")) {
+              filaDatos.push(
+                celda.querySelector("i").classList.contains("estado-ok") ? "OK" : "ALERTA"
+              );
+            } else {
+              filaDatos.push(celda.innerText);
             }
+          }
         });
         data.push(filaDatos);
-    });
+      });
 
-    // Dibujar tabla (solo texto)
-    doc.autoTable({
+      // Dibujar tabla (solo texto)
+      doc.autoTable({
         head: [data[0]],
         body: data.slice(1),
         startY: 28,
@@ -268,11 +271,11 @@
         headStyles: { fillColor: [59, 130, 246], textColor: 255 },
         bodyStyles: { textColor: 0 },
         styles: { halign: 'center', fontSize: 11 }
-    });
+      });
 
-    // Guardar PDF
-    doc.save("inventario.pdf");
-}
+      // Guardar PDF
+      doc.save("inventario.pdf");
+    }
   </script>
 </body>
 </html>
