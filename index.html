@@ -7,6 +7,7 @@
     :root {
       --azul-oscuro: #1e1e2f;
       --azul: #3b82f6;
+      --azul-hover: #2563eb;
       --gris-fondo: #f3f4f6;
       --blanco: #ffffff;
       --gris-borde: #e5e7eb;
@@ -52,6 +53,18 @@
 
     .sidebar a:hover {
       background-color: #2c2c44;
+    }
+
+    .sidebar a.phone-sidebar {
+      margin-top: auto;
+      margin-bottom: 20px;
+      background-color: rgba(59, 130, 246, 0.15);
+      border-left: 4px solid var(--azul);
+      font-size: 15px;
+    }
+
+    .sidebar a.phone-sidebar:hover {
+      background-color: rgba(59, 130, 246, 0.28);
     }
 
     /* Main content */
@@ -130,6 +143,37 @@
       font-size: 17px;
     }
 
+    /* Botón flotante de llamada */
+    .phone-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background-color: var(--azul);
+      color: var(--blanco);
+      padding: 12px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+      transition: transform 0.25s ease, background-color 0.25s ease;
+      z-index: 1000;
+    }
+
+    .phone-float:hover {
+      background-color: var(--azul-hover);
+      transform: translateY(-3px);
+    }
+
+    .phone-float svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
     /* Responsividad */
     @media (max-width: 768px) {
       .sidebar {
@@ -146,6 +190,13 @@
       .quienes-somos {
         padding: 20px;
       }
+      .phone-float span {
+        display: none;
+      }
+      .phone-float {
+        padding: 14px;
+        border-radius: 50%;
+      }
     }
   </style>
 </head>
@@ -156,6 +207,9 @@
     <a href="./inventario.html">Inventarios</a>
     <a href="./cliente.html">Cliente</a>
     <a href="./control.html">Ctl.Personal</a>
+    <a href="tel:51900457530" class="phone-sidebar">
+      📞 900 457 530
+    </a>
   </div>
 
   <div class="main">
@@ -168,5 +222,15 @@
       </p>
     </div>
   </div>
+
+  <!-- Botón flotante de llamada directa -->
+  <a href="tel:51900457530" 
+     class="phone-float" 
+     title="Llámanos al 900 457 530">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+    </svg>
+    <span>Llamar: 900 457 530</span>
+  </a>
 </body>
 </html>
